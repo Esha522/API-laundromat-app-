@@ -30,4 +30,6 @@ app.get('/', (req, res) => {
   res.send('Laundromat API is running...');
 });
 
-module.exports = app;
+module.exports = (req, res) => {
+  app(req, res);
+};
