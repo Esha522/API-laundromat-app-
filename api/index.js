@@ -31,4 +31,6 @@ app.get('/', (req, res) => {
 });
 app.listen(3000, () => console.log("Server ready on port 3000."));
 
-module.exports = app; 
+module.exports = (req, res) => {
+  res.status(200).json({ message: 'Hello from laundromat API!' });
+};
