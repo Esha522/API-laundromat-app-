@@ -1,6 +1,6 @@
 const Logistics = require('../Models/logisticsmodel');
 const Order = require ('../Models/ordermodel');
-const createNotification = require ('../Controllers/notification');
+const createNotification = require ('./notification');
 
 
 // Create logistics entry

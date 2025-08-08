@@ -1,6 +1,6 @@
 const Order = require('../Models/ordermodel');
 const moment = require('moment');
-const createNotification = require ('../Controllers/notification');
+const createNotification = require ('./notification');
 
 // place order
 exports.createOrder = async (req, res) => {

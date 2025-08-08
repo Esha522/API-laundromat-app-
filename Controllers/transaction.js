@@ -1,6 +1,6 @@
 const Transaction = require ('../Models/transactionmodel');
 const User = require ('../Models/usermodel');
-const createNotification = require ('../Controllers/notification');
+const createNotification = require ('./notification');
 
 // Create Transaction
 exports.createTransaction = async (req, res) => {
