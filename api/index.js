@@ -29,8 +29,5 @@ app.use('/api/customers', require('../Routes/customerroutes'))
 app.get('/', (req, res) => {
   res.send('Laundromat API is running...');
 });
-app.listen(3000, () => console.log("Server ready on port 3000."));
 
-module.exports = (req, res) => {
-  res.status(200).json({ message: 'Hello from laundromat API!' });
-};
+module.exports = app;
