@@ -30,6 +30,4 @@ app.get('/', (req, res) => {
   res.send('Laundromat API is running...');
 });
 
-module.exports = (req, res) => {
-  app(req, res);
-};
+module.exports = serverless(app);
