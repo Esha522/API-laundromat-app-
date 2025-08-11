@@ -1,6 +1,6 @@
-const Card = require('../../Models/cardmodel');
-const WalletTransaction = require('../../Models/wallettransactionmodel');
-const User = require ('../../Models/usermodel');
+const Card = require('../Models/cardmodel');
+const WalletTransaction = require('../Models/transactionmodel');
+const User = require ('../Models/usermodel');
 
 // get wallet detail of user
 exports.getWalletInfo = async (req, res) => {
