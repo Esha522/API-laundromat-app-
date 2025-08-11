@@ -1,5 +1,5 @@
 const Card = require('../Models/cardmodel');
-const WalletTransaction = require('../Models/transactionmodel');
+const WalletTransaction = require('../Models/wallettransactionmodel');
 const User = require ('../Models/usermodel');
 
 // get wallet detail of user
