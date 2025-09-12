@@ -7,20 +7,35 @@ const jwt = require('jsonwebtoken');
 exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
 
-  try {
-    // Check if user exists
+try {
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: 'Invalid credentials' });
+    console.log("Found user:", user);
 
-    // Check password
+    if (!user) return res.status(400).json({ message: "Invalid credentials" });
+
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
+console.log("Password match:", isMatch);
 
-    // Create token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
 
-    res.status(200).json({ token });
+    res.status(200).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      phonenumber: user.phonenumber,
+      role: user.role,
+      branch: user.branch,
+      accountStatus: user.accountStatus,
+      dateOfBirth: user.dateOfBirth,
+      gender: user.gender,
+      isAdmin: user.isAdmin,
+      profilePhoto: user.profilePhoto,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      token,
+    });
   } catch (err) {
-    res.status(500).send('Server Error');
+    res.status(500).json({ message: "Server Error" });
   }
 };

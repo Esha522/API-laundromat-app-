@@ -14,7 +14,7 @@ const serviceSchema = new mongoose.Schema({
     required: true
   },
   turnaroundTime: {
-    type: String, // e.g., "24 hours", "2 days"
+    type: String, 
     required: true
   },
   pricingType: {
@@ -23,7 +23,7 @@ const serviceSchema = new mongoose.Schema({
     required: true
   },
   estimatedWeightLimit: {
-    type: Number, // in Kg or any defined unit
+    type: Number, 
     required: true
   },
   description: {

@@ -1,13 +1,62 @@
-const Notification = require('../Models/notificationmodel');
+const Notification = require("../Models/notificationmodel");
+const moment = require("moment");
 
-const createNotification = async ({ type, message, orderId }) => {
+exports.getNotifications = async (req, res) => {
   try {
-    const newNotification = new Notification({ type, message, orderId });
-      await newNotification.save();
-    console.log('Notification saved:', newNotification); 
+    const range = req.query.range || "all";
+
+    let query = {};
+
+    if (range !== "all") {
+      let startDate, endDate;
+
+      if (range === "today") {
+        startDate = moment().startOf("day");
+        endDate = moment().endOf("day");
+      } else if (range === "week") {
+        startDate = moment().startOf("isoWeek");
+        endDate = moment().endOf("isoWeek");
+      } else if (range === "month") {
+        startDate = moment().startOf("month");
+        endDate = moment().endOf("month");
+      }
+
+      query.createdAt = {
+        $gte: startDate.toDate(),
+        $lte: endDate.toDate(),
+      };
+    }
+
+    const notifications = await Notification.find(query).sort({
+      createdAt: -1,
+    });
+    console.log(
+      `Fetched ${notifications.length} notifications for range: ${range}`
+    );
+    res.json(notifications);
   } catch (error) {
-    console.error('Error creating notification:', error.message);
+    console.error("Error fetching notifications:", error);
+    res.status(500).json({ message: "Failed to get notifications" });
   }
 };
 
+
+async function createNotification({
+  type,
+  title,
+  description,
+  orderId,
+  statusLabel,
+  statusColor,
+}) {
+  const Notification = require("../Models/notificationmodel");
+  return await Notification.create({
+    type,
+    title,
+    description,
+    orderId,
+    statusLabel,
+    statusColor,
+  });
+}
 module.exports = createNotification;

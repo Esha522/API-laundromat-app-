@@ -1,14 +1,49 @@
 const Customer = require('../Models/customermodel');
+const User  = require ('../Models/usermodel');
+const moment = require ('moment');
 
 // View all customers
 exports.getAllCustomers = async (req, res) => {
   try {
     const customers = await Customer.find()
     .select('customerId name phonenumber email gender address status'); 
-    res.status(200).json(customers);
+        const today = moment().startOf('day').toDate();
+    
+    const newRegistrations = await User.countDocuments({ createdAt: { $gte: today } });
+    const activeCustomers = await Customer.countDocuments({ status: 'Active' });
+    const InactiveCustomers = await Customer.countDocuments    ({ status: 'Inactive' });
+
+    res.status(200).json({
+      customers,
+      metrics: {
+        newRegistrations,
+        activeCustomers,
+        InactiveCustomers
+      },
+    });
+
+
   } catch (error) {
     console.error('Error fetching customers:', error);
     res.status(500).json({ message: 'Failed to fetch customers' });
+  }
+};
+
+
+// get customer by id 
+exports.getCustomerById = async (req, res) => {
+  try {
+ const customerId = req.params.customerId;
+
+    const customer = await Customer.findOne({ customerId });
+    if (!customer) {
+      return res.status(404).json({ message: 'Customer not found'});
+    }
+
+    res.status(200).json(customer);
+  } catch (error) {
+    console.error('Get customer by ID error:', error);
+    res.status(500).json({ message: 'Server error while fetching customer' });
   }
 };
 
@@ -28,7 +63,8 @@ exports.createCustomer = async (req, res) => {
       postalCode,
       customerType,
       status,
-      registeredBy
+      registeredBy,
+      registeredOn
     } = req.body;
 
     const existingCustomer = await Customer.findOne({
@@ -61,7 +97,8 @@ exports.createCustomer = async (req, res) => {
       postalCode,
       customerType,
       status,
-      registeredBy
+      registeredBy,
+      registeredOn
     });
 
     await newCustomer.save();
@@ -99,7 +136,7 @@ exports.updateCustomer = async (req, res) => {
     customer.customerType = req.body.customerType || customer.customerType; 
     customer.status = req.body.status || customer.status; 
     customer.registeredBy = req.body.registeredBy || customer.registeredBy; 
-
+    customer.registeredOn = req.body.registeredOn || customer.registeredOn;
 
     const updatedCustomer = await customer.save();
     res.json(updatedCustomer);
@@ -114,7 +151,6 @@ exports.deleteCustomer = async (req, res) => {
   try {
     const customerId = req.params.customerId;
 
-    // Find and delete the customer by custom customerId
     const deletedCustomer = await Customer.findOneAndDelete({ customerId });
 
     if (!deletedCustomer) {

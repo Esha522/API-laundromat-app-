@@ -9,6 +9,9 @@ const logisticsSchema = new mongoose.Schema({
   customerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
+  },
+   customerName: {           
+    type: String,
     required: true
   },
   timeSlot: {

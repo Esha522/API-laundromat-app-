@@ -5,10 +5,11 @@ const { protect, admin } = require('../middleware/auth');
 
 
 router.post('/create/:userId', createOrder);
+router.post('/create', createOrder);
 router.get('/incoming', protect, admin, getIncomingOrders);
 router.get('/', protect, admin, getallorders);
-router.put('/:id', protect, admin, updateOrder);
-router.delete('/:id', protect, admin, deleteorder);
+router.put('/update/:id', protect, admin, updateOrder);
+router.delete('/delete/:id', protect, admin, deleteorder);
 router.get('/:id', protect, getOrderById);
 
 

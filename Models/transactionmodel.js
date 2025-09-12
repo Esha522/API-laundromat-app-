@@ -7,7 +7,7 @@ const transactionSchema = new mongoose.Schema({
     required: true
   },
   customerId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'User',
     required: true
   },
@@ -26,7 +26,7 @@ const transactionSchema = new mongoose.Schema({
   },
   paymentStatus: {
     type: String,
-    enum: ['Paid', 'Unpaid'],
+    enum: ['Paid', 'Unpaid', 'Failed'],
     default: 'Unpaid'
   },
   datePaid: {

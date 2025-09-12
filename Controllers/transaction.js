@@ -1,32 +1,44 @@
-const Transaction = require ('../Models/transactionmodel');
-const User = require ('../Models/usermodel');
-const createNotification = require ('./notification');
+const Transaction = require('../Models/transactionmodel');
+const Order = require("../Models/ordermodel");
+const createNotification = require('./notification');
 
 // Create Transaction
 exports.createTransaction = async (req, res) => {
   try {
     const { orderId, customerId, amountDue, paymentMethod, paymentStatus, datePaid } = req.body;
- 
-     const customer = await User.findById(customerId);
-    if (!customer) {
-      return res.status(404).json({ message: 'Customer not found' });
-    }
+
+    const order = await Order.findById(orderId).populate("customer", "customerId name");
+    if (!order) return res.status(404).json({ message: "Order not found" });
 
     const transaction = await Transaction.create({
-      orderId,
-      customerId, 
-      customerName: customer.name,
+      orderId: order._id,
+      customer: order.customer._id,           // ObjectId for joins
+      customerId: order.customer.customerId,  // business ID string
+      customerName: order.customer.name,
       amountDue,
       paymentMethod,
       paymentStatus,
       datePaid
     });
 
- await createNotification({
-  type: 'payment_received',
-  message: `Payment received for Order #${orderId}`,
-  orderId: orderId
-});
+    if (paymentStatus === "Paid") {
+      await createNotification({
+        type: "payment_received",
+        title: "Payment Received",
+        description: `$${amountDue} received for Order #${orderId} (${order.customer.name}). Marked as paid.`,
+        orderId: orderId,
+        statusLabel: "Payment Received",
+      });
+    } else if (paymentStatus === "Failed") {
+      await createNotification({
+        type: "payment_failed",
+        title: "Payment Failed",
+        description: `Card declined for Order #${orderId} (${order.customer.name}). Payment not processed.`,
+        orderId: orderId,
+        statusLabel: "Payment Failed",
+      });
+    }
+
 
     res.status(201).json(transaction);
   } catch (error) {
@@ -35,7 +47,7 @@ exports.createTransaction = async (req, res) => {
   }
 
 
- 
+
 };
 
 
@@ -53,13 +65,13 @@ exports.getAllTransactions = async (req, res) => {
     if (date) {
       const start = new Date(date);
       const end = new Date(date);
-      end.setDate(end.getDate() + 1); 
+      end.setDate(end.getDate() + 1);
       filter.datePaid = { $gte: start, $lt: end };
     }
 
     const transactions = await Transaction.find(filter)
-    .select('orderId customerName datePaid amountDue paymentMethod paymentStatus') ;
-;
+      .select('orderId customerName datePaid amountDue paymentMethod paymentStatus');
+    ;
 
     res.status(200).json(transactions);
   } catch (error) {
@@ -75,7 +87,7 @@ exports.getTransactionById = async (req, res) => {
     const { orderId } = req.params;
 
     const transactions = await Transaction.find({ orderId });
-   if (!transactions || transactions.length === 0) {
+    if (!transactions || transactions.length === 0) {
       return res.status(404).json({ message: 'No transactions found for this order ID' });
     }
 

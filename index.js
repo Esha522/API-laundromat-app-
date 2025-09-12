@@ -23,7 +23,9 @@ app.use('/api/track', require('./Routes/trackorderroutes'));
 app.use('/api/wallet', require('./Routes/walletroutes'));
 app.use('/api/tickets', require('./Routes/ticketsroutes'));
 app.use('/api/home', require('./Routes/homescreenroutes'));
-app.use('/api/customers', require('./Routes/customerroutes'))
+app.use('/api/customers', require('./Routes/customerroutes'));
+app.use('/api/coupons', require ('./Routes/couponsroutes'));
+app.use('/uploads', express.static('uploads'));
 
 
 app.get('/', (req, res) => {
